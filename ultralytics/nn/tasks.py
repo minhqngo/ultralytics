@@ -1516,12 +1516,12 @@ def yaml_model_load(path):
         (dict): Model dictionary.
     """
     path = Path(path)
-    if path.stem in (f"yolov{d}{x}6" for x in "nsmlx" for d in (5, 8)):
-        new_stem = re.sub(r"(\d+)([nslmx])6(.+)?$", r"\1\2-p6\3", path.stem)
+    if path.stem in (f"yolov{d}{x}6" for x in "tnsmlx" for d in (5, 8)):
+        new_stem = re.sub(r"(\d+)([tnslmx])6(.+)?$", r"\1\2-p6\3", path.stem)
         LOGGER.warning(f"Ultralytics YOLO P6 models now use -p6 suffix. Renaming {path.stem} to {new_stem}.")
         path = path.with_name(new_stem + path.suffix)
 
-    unified_path = re.sub(r"(\d+)([nslmx])(.+)?$", r"\1\3", str(path))  # i.e. yolov8x.yaml -> yolov8.yaml
+    unified_path = re.sub(r"(\d+)([tnslmx])(.+)?$", r"\1\3", str(path))  # i.e. yolov8x.yaml -> yolov8.yaml
     yaml_file = check_yaml(unified_path, hard=False) or check_yaml(path)
     d = YAML.load(yaml_file)  # model dict
     d["scale"] = guess_model_scale(path)
@@ -1531,16 +1531,16 @@ def yaml_model_load(path):
 
 def guess_model_scale(model_path):
     """
-    Extract the size character n, s, m, l, or x of the model's scale from the model path.
+    Extract the size character t, n, s, m, l, or x of the model's scale from the model path.
 
     Args:
         model_path (str | Path): The path to the YOLO model's YAML file.
 
     Returns:
-        (str): The size character of the model's scale (n, s, m, l, or x).
+        (str): The size character of the model's scale (t, n, s, m, l, or x).
     """
     try:
-        return re.search(r"yolo(e-)?[v]?\d+([nslmx])", Path(model_path).stem).group(2)  # noqa
+        return re.search(r"yolo(e-)?[v]?\d+([tnslmx])", Path(model_path).stem).group(2)  # noqa
     except AttributeError:
         return ""
 
